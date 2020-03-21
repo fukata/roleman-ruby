@@ -36,7 +36,7 @@
 --
 roleman:
   version: 1
-  paths:
+  routes:
     - path: /
       method: GET
       enabled_roles:
