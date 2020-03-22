@@ -1,0 +1,44 @@
+roleman:
+  version: '1'
+  role_field: role
+  routes:
+    - path: /
+      method: GET
+      enabled_roles:
+        - read
+        - edit
+        - admin
+    - path: /login
+      method: GET
+      enabled_roles:
+        - read
+        - edit
+        - admin
+    - path: /login
+      method: POST
+      enabled_roles:
+        - read
+        - edit
+        - admin
+    - path: /logout
+      method: DELETE
+      enabled_roles:
+        - read
+        - edit
+        - admin
+    - path: /items/:id
+      method: GET
+      enabled_roles:
+        - read
+        - edit
+        - admin
+    - path: /items/:id/edit
+      method: GET
+      enabled_roles:
+        - edit
+        - admin
+    - path: /items/:id
+      method: PUT
+      enabled_roles:
+        - edit
+        - admin
