@@ -1,11 +1,12 @@
 RSpec.describe Roleman::Authenticator do
+  let(:authenticator) { Roleman::Authenticator.new(config: config, router: router) }
+  let(:config) { Roleman::Config.load(config_path, options) }
+  let(:config_path) { load_fixture('valid_config_001.yml', type: :yaml) }
+  let(:router) { Roleman::Router.new(config.routes) }
+  let(:options) { {} }
+
   describe '#authorize' do
     subject { authenticator.authorize(user, path: path, request: request, method: method, extras: extras) }
-    let(:authenticator) { Roleman::Authenticator.new(config: config, router: router) }
-    let(:config) { Roleman::Config.load(config_path, options) }
-    let(:config_path) { load_fixture('valid_config_001.yml', type: :yaml) }
-    let(:router) { Roleman::Router.new(config.routes) }
-    let(:options) { {} }
 
     context 'Exist route' do
       let(:path) { '/items/1/edit' }
@@ -53,5 +54,96 @@ RSpec.describe Roleman::Authenticator do
       end
 
     end
+  end
+
+  describe '#get_role' do
+    subject { authenticator.send(:get_role, user) }
+
+    context 'user is String' do
+      let(:user) { 'read' }
+      it 'return same argument' do
+        is_expected.to eq user
+      end
+    end
+
+    context 'user is Hash' do
+      let(:user) { {
+        'role' => 'read',
+        'name' => 'fukata'
+      } }
+      it 'return same argument' do
+        is_expected.to eq 'read'
+      end
+    end
+
+    context 'user is Hash' do
+      let(:user) { {
+        'role' => 'read',
+        'name' => 'fukata'
+      } }
+      it 'return same argument' do
+        is_expected.to eq 'read'
+      end
+    end
+
+    context 'user is class isntance' do
+      let(:user) { User.new('read') }
+      it 'return same argument' do
+        is_expected.to eq 'read'
+      end
+    end
+  end
+
+  describe '#get_path' do
+    subject { authenticator.send(:get_path, path: path, request: request) }
+
+    context 'request is nil' do
+      let(:path) { '/login' }
+      let(:request) { nil }
+      it 'return path' do
+        is_expected.to eq path
+      end
+    end
+
+    context 'request is class instance' do
+      let(:path) { '/' }
+      let(:request) { Request.new('/login') }
+      it 'return request.path' do
+        is_expected.to eq request.path
+      end
+    end
+
+    context 'request is class instance but not have path property' do
+      let(:path) { '/login' }
+      let(:request) { RequestNoPath.new() }
+      it 'raise error' do
+        expect{ subject }.to raise_error ::ArgumentError
+      end
+    end
+
+    context 'path and request is nil' do
+      let(:path) { nil }
+      let(:request) { nil }
+      it 'raise error' do
+        expect{ subject }.to raise_error ::ArgumentError
+      end
+    end
+  end
+
+  class User
+    attr_accessor :role
+    def initialize(role)
+      @role = role
+    end
+  end
+
+  class Request
+    attr_accessor :path
+    def initialize(path)
+      @path = path
+    end
+  end
+
+  class RequestNoPath
   end
 end

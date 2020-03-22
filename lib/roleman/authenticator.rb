@@ -59,13 +59,13 @@ module Roleman
     #   - path and request is nil
     #   - request is not have path property
     def get_path(path: nil, request: nil)
-      raise ArgumentError('path or request is must not be nil') unless path || request
+      raise ::ArgumentError.new('path or request is must not be nil') unless path || request
 
       if request
         if request.respond_to? :path
           request.path
         else
-          raise ArgumentError('request is not have path property or method')
+          raise ::ArgumentError.new('request is not have path property or method')
         end
       else
         path
